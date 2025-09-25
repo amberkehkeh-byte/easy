@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8">
+  <title>安親班點名系統</title>
+  <style>
+    body {
+      font-family: "Microsoft JhengHei", sans-serif;
+      margin: 20px;
+      background: #f9fafb;
+    }
+    h1 {
+      text-align: center;
+      color: #333;
+    }
+    .class {
+      margin-bottom: 30px;
+      padding: 15px;
+      border-radius: 12px;
+      background: #fff;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+    }
+    .class h2 {
+      margin-bottom: 10px;
+      color: #444;
+    }
+    .student {
+      display: inline-block;
+      margin: 6px;
+      padding: 10px 15px;
+      border-radius: 8px;
+      background: #e5e7eb;
+      cursor: pointer;
+      transition: 0.3s;
+    }
+    .student.present {
+      background: #34d399;
+      color: white;
+    }
+    .student.absent {
+      background: #f87171;
+      color: white;
+    }
+    .student.fixed {
+      background: #60a5fa;
+      color: white;
+    }
+  </style>
+</head>
+<body>
+  <h1>安親班點名系統</h1>
+  <div id="classes"></div>
+
+  <script>
+    const classData = {
+      "A班": ["小明", "小華", "小美", "小強", "小芳"],
+      "B班": ["小志", "小玲", "小君", "小安", "小傑"],
+      "C班": ["小文", "小安妮", "小林", "小李", "小婷"],
+      "D班": ["小宇", "小辰", "小佳", "小蓉", "小龍"]
+    };
+
+    const classContainer = document.getElementById("classes");
+
+    function loadStatus(name) {
+      return localStorage.getItem(name) || "";
+    }
+
+    function saveStatus(name, status) {
+      localStorage.setItem(name, status);
+    }
+
+    function toggleStatus(studentDiv, name) {
+      let current = loadStatus(name);
+      if (current === "") {
+        current = "present";
+      } else if (current === "present") {
+        current = "absent";
+      } else if (current === "absent") {
+        current = "fixed";
+      } else {
+        current = "";
+      }
+      saveStatus(name, current);
+      updateClass(studentDiv, current);
+    }
+
+    function updateClass(studentDiv, status) {
+      studentDiv.className = "student";
+      if (status) studentDiv.classList.add(status);
+    }
+
+    Object.keys(classData).forEach(cls => {
+      const classDiv = document.createElement("div");
+      classDiv.className = "class";
+
+      const title = document.createElement("h2");
+      title.textContent = cls;
+      classDiv.appendChild(title);
+
+      classData[cls].forEach(name => {
+        const studentDiv = document.createElement("div");
+        studentDiv.className = "student";
+        studentDiv.textContent = name;
+
+        let status = loadStatus(name);
+        updateClass(studentDiv, status);
+
+        studentDiv.onclick = () => toggleStatus(studentDiv, name);
+        classDiv.appendChild(studentDiv);
+      });
+
+      classContainer.appendChild(classDiv);
+    });
+  </script>
+</body>
+</html>
